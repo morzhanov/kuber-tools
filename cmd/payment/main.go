@@ -6,40 +6,43 @@ import (
 	"os"
 	"os/signal"
 
-	"github.com/morzhanov/kuber-tools/internal/payment"
-
-	"github.com/morzhanov/kuber-tools/internal/config"
 	"github.com/morzhanov/kuber-tools/internal/logger"
+	"github.com/morzhanov/kuber-tools/internal/payment"
+	"github.com/morzhanov/kuber-tools/internal/payment/config"
 	"github.com/morzhanov/kuber-tools/internal/psql"
+	"github.com/morzhanov/kuber-tools/internal/tracing"
 	"go.uber.org/zap"
 )
 
-func failOnError(l *zap.Logger, step string, err error) {
+func failOnError(l *zap.Logger, cancel context.CancelFunc, step string, err error) {
 	if err != nil {
+		cancel()
 		l.Fatal("initialization error", zap.Error(err), zap.String("step", step))
 	}
 }
 
 func main() {
-	l, err := logger.NewLogger()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	l, err := logger.NewLogger("payment")
 	if err != nil {
 		log.Fatal("initialization error during logger setup")
 	}
 	c, err := config.NewConfig()
-	failOnError(l, "config", err)
-	t, err := telemetry.NewTelemetry(c.JaegerURL, "payment", l)
-	failOnError(l, "telemetry", err)
-	p, err := psql.NewDb(c.PostgresURL)
-	failOnError(l, "postgres", err)
+	failOnError(l, cancel, "config", err)
+	t, err := tracing.NewTracer(ctx, l, "payment")
+	failOnError(l, cancel, "tracer", err)
+	db, err := psql.NewDb(c.PostgresURL)
+	failOnError(l, cancel, "postgresql", err)
+	srv := payment.NewService(db)
 
-	pay := payment.NewPayment(p, t)
-	srv, err := payment.NewController(pay, c, l, t)
-	failOnError(l, "service", err)
-	go srv.Listen(context.Background())
+	s := payment.NewServer(c.URL, c.Port, srv, l, t)
+	s.Listen(ctx, cancel)
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt)
-	log.Println("App successfully started!")
+	l.Info("Payment service successfully started!")
 	<-quit
-	log.Println("received os.Interrupt, exiting...")
+	l.Info("received os.Interrupt, exiting...")
 }

@@ -8,14 +8,14 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-func NewLogger() (*zap.Logger, error) {
+func NewLogger(name string) (*zap.Logger, error) {
 	baseLogsPath := "./logs/"
 	if err := os.MkdirAll(baseLogsPath, 0777); err != nil {
 		return nil, err
 	}
 
 	// info
-	infoFilePath := fmt.Sprintf("%sinfo.log", baseLogsPath)
+	infoFilePath := fmt.Sprintf("%s%s_info.log", baseLogsPath, name)
 	_, err := os.Create(infoFilePath)
 	if err != nil {
 		return nil, err
@@ -26,7 +26,7 @@ func NewLogger() (*zap.Logger, error) {
 	}
 
 	// error
-	errFilePath := fmt.Sprintf("%serror.log", baseLogsPath)
+	errFilePath := fmt.Sprintf("%s%s_error.log", baseLogsPath, name)
 	_, err = os.Create(errFilePath)
 	if err != nil {
 		return nil, err

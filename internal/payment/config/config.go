@@ -3,21 +3,14 @@ package config
 import "github.com/spf13/viper"
 
 type Config struct {
-	KafkaURL        string
-	KafkaTopic      string
-	KafkaGroupID    string
-	MongoURL        string
-	PostgresURL     string
-	JaegerURL       string
-	APIGWport       string
-	OrderRESTurl    string
-	PaymentGRPCurl  string
-	PaymentGRPCport string
+	Port        string `mapstructure:"PORT"`
+	URL         string `mapstructure:"URL"`
+	PostgresURL string `mapstructure:"POSTGRES_URL"`
 }
 
 func NewConfig() (config *Config, err error) {
 	viper.AddConfigPath("./config")
-	viper.SetConfigName(".env")
+	viper.SetConfigName(".env.payment")
 	viper.SetConfigType("env")
 	viper.AutomaticEnv()
 	if err = viper.ReadInConfig(); err != nil {

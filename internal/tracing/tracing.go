@@ -5,27 +5,24 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/morzhanov/kuber-tools/internal/config"
 	"github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/ext"
 	jconfig "github.com/uber/jaeger-client-go/config"
 	"go.uber.org/zap"
 )
 
-func StartSpanFromHttpRequest(tracer opentracing.Tracer, r *http.Request) opentracing.Span {
-	spanCtx, _ := ExtractHttpSpan(tracer, r)
+func StartSpanFromHttpRequest(r *http.Request, tracer opentracing.Tracer) opentracing.Span {
+	spanCtx, _ := ExtractHttpSpan(r, tracer)
 	return tracer.StartSpan("http-receive", ext.RPCServerOption(spanCtx))
 }
 
-func StartSpanFromGrpcRequest(tracer opentracing.Tracer, ctx context.Context) opentracing.Span {
-	spanCtx, _ := ExtractGrpcSpan(tracer, ctx)
+func StartSpanFromGrpcRequest(ctx context.Context, tracer opentracing.Tracer) opentracing.Span {
+	spanCtx, _ := ExtractGrpcSpan(ctx, tracer)
 	return tracer.StartSpan("grpc-receive", ext.RPCServerOption(spanCtx))
 }
 
-func NewTracer(ctx context.Context, c *config.Config, logger *zap.Logger) (opentracing.Tracer, error) {
-	cfg := jconfig.Configuration{
-		ServiceName: c.ServiceName,
-	}
+func NewTracer(ctx context.Context, logger *zap.Logger, serviceName string) (opentracing.Tracer, error) {
+	cfg := jconfig.Configuration{ServiceName: serviceName}
 	tracer, closer, err := cfg.NewTracer(jconfig.Logger(NewJeagerLogger(logger)))
 	if err != nil {
 		return nil, fmt.Errorf("cannot init Jaeger tracer: %v", err)

@@ -1,51 +1,59 @@
-package grpc
+package grpcserver
 
 import (
 	"context"
 	"net"
 
+	"github.com/morzhanov/kuber-tools/internal/errors"
+	"github.com/morzhanov/kuber-tools/internal/tracing"
+	"github.com/opentracing/opentracing-go"
+	"github.com/prometheus/common/log"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 )
 
 type baseServer struct {
-	url string
-	log *zap.Logger
+	Tracer opentracing.Tracer
+	Logger *zap.Logger
+	Uri    string
 }
 
 type BaseServer interface {
+	PrepareContext(ctx context.Context) (context.Context, opentracing.Span)
 	Listen(ctx context.Context, cancel context.CancelFunc, server *grpc.Server)
-	Logger() *zap.Logger
-	Tracer() tracer.TraceFn
-	Meter() meter.Meter
+}
+
+func (s *baseServer) PrepareContext(ctx context.Context) (context.Context, opentracing.Span) {
+	span := tracing.StartSpanFromGrpcRequest(s.Tracer, ctx)
+	return ctx, span
 }
 
 func (s *baseServer) Listen(ctx context.Context, cancel context.CancelFunc, server *grpc.Server) {
-	lis, err := net.Listen("tcp", s.url)
+	lis, err := net.Listen("tcp", s.Uri)
 	if err != nil {
 		cancel()
-		s.log.Fatal("error during grpc server setup", zap.Error(err))
+		errors.LogInitializationError(err, "grpc server", s.Logger)
 		return
 	}
 
 	if err := server.Serve(lis); err != nil {
 		cancel()
-		s.log.Fatal("error during grpc server setup", zap.Error(err))
+		errors.LogInitializationError(err, "grpc server", s.Logger)
 		return
 	}
-	s.log.Info("Grpc server started", zap.String("port", s.url))
+	log.Info("Grpc server started", zap.String("port", s.Uri))
 	<-ctx.Done()
 	if err := lis.Close(); err != nil {
 		cancel()
-		s.log.Fatal("error during grpc server setup", zap.Error(err))
+		errors.LogInitializationError(err, "grpc server", s.Logger)
 		return
 	}
 }
 
-func (s *baseServer) Logger() *zap.Logger       { return s.log }
-func (s *baseServer) Tracer() telemetry.TraceFn { return s.tel.Tracer() }
-func (s *baseServer) Meter() meter.Meter        { return s.tel.Meter() }
-
-func NewServer(url string, log *zap.Logger) BaseServer {
-	return &baseServer{log: log, url: url}
+func NewServer(
+	tracer opentracing.Tracer,
+	logger *zap.Logger,
+	uri string,
+) BaseServer {
+	return &baseServer{tracer, logger, uri}
 }

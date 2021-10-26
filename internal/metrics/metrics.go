@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/morzhanov/kuber-tools/internal/config"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -42,10 +41,10 @@ func (mc *collector) RecordBaseMetrics(ctx context.Context) {
 	}()
 }
 
-func NewMetricsCollector(c *config.Config) Collector {
+func NewMetricsCollector(serviceName string) Collector {
 	mc := &collector{}
 	mc.opsProcessed = promauto.NewCounter(prometheus.CounterOpts{
-		Name: fmt.Sprintf("%v_ops_total", c.ServiceName),
+		Name: fmt.Sprintf("%v_ops_total", serviceName),
 		Help: "The total number of processed events",
 	})
 	return mc

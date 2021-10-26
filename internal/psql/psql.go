@@ -14,12 +14,12 @@ func NewDb(uri string) (*sqlx.DB, error) {
 	return sqlx.Connect("postgres", uri)
 }
 
-func RunMigrations(db *sqlx.DB) error {
+func RunMigrations(db *sqlx.DB, service string) error {
 	driver, err := postgres.WithInstance(db.DB, &postgres.Config{})
 	if err != nil {
 		return err
 	}
-	mPath, err := filepath.Abs("./internal/migrations")
+	mPath, err := filepath.Abs(fmt.Sprintf("./internal/%s/migrations", service))
 	if err != nil {
 		return err
 	}

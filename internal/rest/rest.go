@@ -10,12 +10,10 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/gin-contrib/cors"
-	errs "github.com/morzhanov/go-realworld/internal/common/errors"
-
 	"github.com/gin-gonic/gin"
-	"github.com/morzhanov/go-realworld/internal/common/metrics"
-	"github.com/morzhanov/go-realworld/internal/common/tracing"
+	errs "github.com/morzhanov/kuber-tools/internal/errors"
+	"github.com/morzhanov/kuber-tools/internal/metrics"
+	"github.com/morzhanov/kuber-tools/internal/tracing"
 	"github.com/opentracing/opentracing-go"
 	"github.com/prometheus/common/log"
 	"go.uber.org/zap"
@@ -115,10 +113,6 @@ func NewController(
 	mc metrics.Collector,
 ) BaseController {
 	router := gin.Default()
-	config := cors.DefaultConfig()
-	config.AllowAllOrigins = true
-	config.AddAllowHeaders([]string{"authorization"}...)
-	router.Use(cors.New(config))
 	c := baseController{router, tracer, logger, mc}
 	c.mC.RegisterMetricsEndpoint(router)
 	return &c

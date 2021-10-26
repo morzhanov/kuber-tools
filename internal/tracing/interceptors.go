@@ -9,14 +9,7 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
-func InjectHttpSpan(span opentracing.Span, request *http.Request) error {
-	return span.Tracer().Inject(
-		span.Context(),
-		opentracing.HTTPHeaders,
-		opentracing.HTTPHeadersCarrier(request.Header))
-}
-
-func InjectGrpcSpan(span opentracing.Span, ctx context.Context) (context.Context, error) {
+func InjectGrpcSpan(ctx context.Context, span opentracing.Span) (context.Context, error) {
 	meta := make(map[string]string, 0)
 	err := span.Tracer().Inject(
 		span.Context(),
@@ -36,13 +29,13 @@ func InjectGrpcSpan(span opentracing.Span, ctx context.Context) (context.Context
 	return ct, nil
 }
 
-func ExtractHttpSpan(tracer opentracing.Tracer, r *http.Request) (opentracing.SpanContext, error) {
+func ExtractHttpSpan(r *http.Request, tracer opentracing.Tracer) (opentracing.SpanContext, error) {
 	return tracer.Extract(
 		opentracing.HTTPHeaders,
 		opentracing.HTTPHeadersCarrier(r.Header))
 }
 
-func ExtractGrpcSpan(tracer opentracing.Tracer, ctx context.Context) (opentracing.SpanContext, error) {
+func ExtractGrpcSpan(ctx context.Context, tracer opentracing.Tracer) (opentracing.SpanContext, error) {
 	meta, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		return nil, fmt.Errorf("error duting grpc span extracting")
