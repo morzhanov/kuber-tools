@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package payment;
+
+option go_package = "github.com/morzhanov/go-otel/api/grpc/payment";
+
+service Payment {
+  // Process payment
+  rpc ProcessPayment (ProcessPaymentRequest) returns (PaymentMessage) {}
+  // Get payment info
+  rpc GetPaymentInfo (GetPaymentInfoRequest) returns (PaymentMessage) {}
+}
+
+// Payment message
+message PaymentMessage {
+  string id = 1;
+  string order_id = 2;
+  string name = 3;
+  int32 amount = 4;
+  string status = 5;
+}
+
+message ProcessPaymentRequest {
+  string order_id = 1;
+  string name = 3;
+  int32 amount = 4;
+  string status = 5;
+}
+
+message GetPaymentInfoRequest {
+  string order_id = 1;
+}

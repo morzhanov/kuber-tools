@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package order;
+
+option go_package = "github.com/morzhanov/go-otel/api/grpc/order";
+
+service Order {
+  // Create order
+  rpc CreateOrder (CreateOrderRequest) returns (OrderMessage) {}
+  // Process order
+  rpc ProcessOrder (ProcessOrderRequest) returns (OrderMessage) {}
+}
+
+message CreateOrderRequest {
+  string name = 1;
+  int32 amount = 2;
+}
+
+message ProcessOrderRequest {
+  string id = 1;
+}
+
+message OrderMessage {
+  string id = 1;
+  string name = 2;
+  int32 amount = 3;
+  string status = 4;
+}
