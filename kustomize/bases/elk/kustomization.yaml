@@ -1,0 +1,9 @@
+commonLabels:
+  app.kubernetes.io/name: elk
+  app.kubernetes.io/component: elk
+  app.kubernetes.io/part-of: elk
+  app.kubernetes.io/managed-by: kustomize
+
+resources:
+- deployment.yaml
+- service.yaml

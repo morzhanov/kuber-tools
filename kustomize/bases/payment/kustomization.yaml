@@ -1,0 +1,9 @@
+commonLabels:
+  app.kubernetes.io/name: payment
+  app.kubernetes.io/component: payment
+  app.kubernetes.io/part-of: payment
+  app.kubernetes.io/managed-by: kustomize
+
+resources:
+- deployment.yaml
+- service.yaml

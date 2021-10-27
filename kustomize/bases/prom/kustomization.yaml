@@ -1,0 +1,9 @@
+commonLabels:
+  app.kubernetes.io/name: prometheus
+  app.kubernetes.io/component: prometheus
+  app.kubernetes.io/part-of: prometheus
+  app.kubernetes.io/managed-by: kustomize
+
+resources:
+- deployment.yaml
+- service.yaml

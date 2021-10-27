@@ -1,0 +1,9 @@
+commonLabels:
+  app.kubernetes.io/name: mongodb
+  app.kubernetes.io/component: mongodb
+  app.kubernetes.io/part-of: mongodb
+  app.kubernetes.io/managed-by: kustomize
+
+resources:
+- deployment.yaml
+- service.yaml

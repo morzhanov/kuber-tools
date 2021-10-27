@@ -1,0 +1,9 @@
+commonLabels:
+  app.kubernetes.io/name: order
+  app.kubernetes.io/component: order
+  app.kubernetes.io/part-of: order
+  app.kubernetes.io/managed-by: kustomize
+
+resources:
+- deployment.yaml
+- service.yaml

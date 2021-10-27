@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order
+  labels:
+    app: order
+    version: v1
+    project: kubetools
+  namespace: kubetools
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: order
+      version: v1
+      project: kubetools
+  template:
+    metadata:
+      labels:
+        app: order
+        version: v1
+        project: kubetools
+    spec:
+      serviceAccountName: order
+      containers:
+        - name: kubetools_order
+          image: kubetools_order
+          ports:
+            - containerPort: 3002
+          resources:
+            requests:
+              memory: "500M"
+              cpu: "0.15"
+            limits:
+              memory: "1500M"
+              cpu: "0.75"

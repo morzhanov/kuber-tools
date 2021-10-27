@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus
+  labels:
+    app: prometheus
+    version: v1
+    project: kubetools
+  namespace: kubetools
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus
+      version: v1
+      project: kubetools
+  template:
+    metadata:
+      labels:
+        app: prometheus
+        version: v1
+        project: kubetools
+    spec:
+      serviceAccountName: prometheus
+      containers:
+        - name: kubetools_prometheus
+          image: prom/prometheus:v2.17.1

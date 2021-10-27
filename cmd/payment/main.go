@@ -38,11 +38,12 @@ func main() {
 	srv := payment.NewService(db)
 
 	s := payment.NewServer(c.URL, c.Port, srv, l, t)
+
+	l.Info("Payment service successfully started!")
 	s.Listen(ctx, cancel)
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt)
-	l.Info("Payment service successfully started!")
 	<-quit
 	l.Info("received os.Interrupt, exiting...")
 }

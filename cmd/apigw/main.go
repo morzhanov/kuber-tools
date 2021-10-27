@@ -50,11 +50,12 @@ func main() {
 	orderClient := order.NewOrderClient(orderConn)
 
 	s := apigw.NewController(orderClient, payClient, t, l, m)
+
+	l.Info("API Gateway service successfully started!")
 	s.Listen(ctx, cancel, c.Port)
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt)
-	l.Info("API Gateway service successfully started!")
 	<-quit
 	l.Info("received os.Interrupt, exiting...")
 }

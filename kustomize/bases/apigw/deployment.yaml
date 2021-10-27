@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: apigw
+  labels:
+    app: apigw
+    version: v1
+    project: kubetools
+  namespace: kubetools
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: apigw
+      version: v1
+      project: kubetools
+  template:
+    metadata:
+      labels:
+        app: apigw
+        version: v1
+        project: kubetools
+    spec:
+      serviceAccountName: apigw
+      containers:
+        - name: kubetools_apigw
+          image: kubetools_apigw
+          ports:
+            - containerPort: 3001
+          resources:
+            requests:
+              memory: "500M"
+              cpu: "0.15"
+            limits:
+              memory: "1500M"
+              cpu: "0.75"

@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  labels:
+    app: postgres
+    version: v1
+    project: kubetools
+  namespace: kubetools
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+      version: v1
+      project: kubetools
+  template:
+    metadata:
+      labels:
+        app: postgres
+        version: v1
+        project: kubetools
+    spec:
+      serviceAccountName: postgres
+      containers:
+        - name: kubetools_postgres
+          image: postgres
+          ports:
+            - containerPort: 5432

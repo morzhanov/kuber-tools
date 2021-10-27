@@ -45,11 +45,12 @@ func main() {
 	payClient := payment.NewPaymentClient(payConn)
 
 	s := order.NewServer(c.URL, c.Port, payClient, db, t, l)
+
+	l.Info("Order service successfully started!")
 	s.Listen(ctx, cancel)
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt)
-	l.Info("Order service successfully started!")
 	<-quit
 	l.Info("received os.Interrupt, exiting...")
 }

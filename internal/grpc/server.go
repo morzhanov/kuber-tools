@@ -24,7 +24,7 @@ type BaseServer interface {
 }
 
 func (s *baseServer) PrepareContext(ctx context.Context) (context.Context, opentracing.Span) {
-	span := tracing.StartSpanFromGrpcRequest(s.Tracer, ctx)
+	span := tracing.StartSpanFromGrpcRequest(ctx, s.Tracer)
 	return ctx, span
 }
 

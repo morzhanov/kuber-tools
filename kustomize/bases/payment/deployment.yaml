@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment
+  labels:
+    app: payment
+    version: v1
+    project: kubetools
+  namespace: kubetools
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payment
+      version: v1
+      project: kubetools
+  template:
+    metadata:
+      labels:
+        app: payment
+        version: v1
+        project: kubetools
+    spec:
+      serviceAccountName: payment
+      containers:
+        - name: kubetools_payment
+          image: kubetools_payment
+          ports:
+            - containerPort: 3003
+          resources:
+            requests:
+              memory: "500M"
+              cpu: "0.15"
+            limits:
+              memory: "1500M"
+              cpu: "0.75"

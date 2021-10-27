@@ -1,0 +1,9 @@
+commonLabels:
+  app.kubernetes.io/name: grafana
+  app.kubernetes.io/component: grafana
+  app.kubernetes.io/part-of: grafana
+  app.kubernetes.io/managed-by: kustomize
+
+resources:
+- deployment.yaml
+- service.yaml

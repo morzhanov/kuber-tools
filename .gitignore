@@ -21,6 +21,6 @@
 .idea/
 
 # docker
-deploy/data
+compose/data
 
 logs/

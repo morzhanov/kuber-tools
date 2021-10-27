@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: apigw
+  name: apigw
+spec:
+  ports:
+  - name: 80-8080
+    port: 3001
+    protocol: TCP
+    targetPort: 3001
+  selector:
+    app: apigw
+  type: ClusterIP
+status:
+  loadBalancer: {}

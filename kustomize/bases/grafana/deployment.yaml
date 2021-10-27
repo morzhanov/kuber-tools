@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+  labels:
+    app: grafana
+    version: v1
+    project: kubetools
+  namespace: kubetools
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+      version: v1
+      project: kubetools
+  template:
+    metadata:
+      labels:
+        app: grafana
+        version: v1
+        project: kubetools
+    spec:
+      serviceAccountName: grafana
+      containers:
+        - name: kubetools_grafana
+          image: grafana/grafana:6.7.2

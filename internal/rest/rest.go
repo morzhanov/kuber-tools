@@ -95,7 +95,7 @@ func (c *baseController) GetSpan(ctx *gin.Context) *opentracing.Span {
 
 func (c *baseController) Handler(handler gin.HandlerFunc) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		span := tracing.StartSpanFromHttpRequest(c.tracer, ctx.Request)
+		span := tracing.StartSpanFromHttpRequest(ctx.Request, c.tracer)
 		ctx.Set("span", span)
 		handler(ctx)
 		defer span.Finish()

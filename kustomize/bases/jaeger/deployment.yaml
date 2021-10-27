@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jaeger
+  labels:
+    app: jaeger
+    version: v1
+    project: kubetools
+  namespace: kubetools
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jaeger
+      version: v1
+      project: kubetools
+  template:
+    metadata:
+      labels:
+        app: jaeger
+        version: v1
+        project: kubetools
+    spec:
+      serviceAccountName: jaeger
+      containers:
+        - name: kubetools_jaeger
+          image: jaegertracing/all-in-one:latest
