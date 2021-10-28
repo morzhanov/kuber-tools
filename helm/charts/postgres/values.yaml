@@ -1,0 +1,4 @@
+common:
+  name: postgres
+  version: v1
+  port: 5432

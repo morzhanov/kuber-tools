@@ -1,0 +1,4 @@
+common:
+  name: prometheus
+  version: v1
+  port: 9090

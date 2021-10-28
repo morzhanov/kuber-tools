@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.common.name }}-configmap
+data:
+  PORT: {{ .Values.common.port }}
+  ORDER_GRPC_URL: order
+  ORDER_GRPC_PORT: 5002
+  PAYMENT_GRPC_URL: payment
+  PAYMENT_GRPC_PORT: 5003

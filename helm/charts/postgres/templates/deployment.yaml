@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.common.name }}
+  labels:
+    app: {{ .Values.common.name }}
+    version: {{ .Values.common.version }}
+    project: {{ .Values.global.project }}
+  namespace: {{ .Values.global.namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.common.name }}
+      version: {{ .Values.common.version }}
+      project: {{ .Values.global.project }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.common.name }}
+        version: {{ .Values.common.version }}
+        project: {{ .Values.global.project }}
+    spec:
+      containers:
+        - name: {{ .Values.global.project }}-{{ .Values.common.name }}
+          image: vladmorzhanov/kubetools_apigw:1.0.1
+          ports:
+            - containerPort: {{ .Values.common.port }}
+          env:
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.common.name }}-configmap
+                  key: POSTGRES_DB
+            - name: POSTGRES_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.common.name }}-configmap
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.common.name }}-configmap
+                  key: POSTGRES_PASSWORD

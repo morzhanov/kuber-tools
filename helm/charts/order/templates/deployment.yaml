@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.common.name }}
+  labels:
+    app: {{ .Values.common.name }}
+    version: {{ .Values.common.version }}
+    project: {{ .Values.global.project }}
+  namespace: {{ .Values.global.namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.common.name }}
+      version: {{ .Values.common.version }}
+      project: {{ .Values.global.project }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.common.name }}
+        version: {{ .Values.common.version }}
+        project: {{ .Values.global.project }}
+    spec:
+      containers:
+        - name: {{ .Values.global.project }}-{{ .Values.common.name }}
+          image: vladmorzhanov/kubetools_order:1.0.5
+          ports:
+            - containerPort: {{ .Values.common.port }}
+          env:
+            - name: PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.common.name }}-configmap
+                  key: PORT
+            - name: URL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.common.name }}-configmap
+                  key: URL
+            - name: MONGO_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.common.name }}-configmap
+                  key: MONGO_URL
+            - name: PAYMENT_GRPC_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.common.name }}-configmap
+                  key: PAYMENT_GRPC_URL
+            - name: PAYMENT_GRPC_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.common.name }}-configmap
+                  key: PAYMENT_GRPC_PORT

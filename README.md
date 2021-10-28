@@ -68,7 +68,13 @@ k3d cluster create kubetools -p "30000-31652:30000-31652@server:0"
 kubectl get nodes
 ```
 
-## Kustomize
+## Deploying application on Local Kubernetes Cluster
+
+Here described two option how to deploy Go application on kubernetes cluster locally:
+- Kustomize
+- Helm
+
+### Kustomize
 
 - `kustomize/bases` contains base configuration files for deployment, configmaps, services, etc.
 - `kustomize/overlays` contains base overlay config for base files
@@ -89,3 +95,7 @@ To deploy a stask to the kubernetes cluster:
 ```shell
 kubectl apply -k  kustomize/overlays/base
 ```
+
+### Helm
+
+// TODO: describe how to configure and deploy cluster with HELM

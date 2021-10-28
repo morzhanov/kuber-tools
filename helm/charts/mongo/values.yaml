@@ -1,0 +1,4 @@
+common:
+  name: mongodb
+  version: v1
+  port: 27017

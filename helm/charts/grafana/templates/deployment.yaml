@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.common.name }}
+  labels:
+    app: {{ .Values.common.name }}
+    version: {{ .Values.common.version }}
+    project: {{ .Values.global.project }}
+  namespace: {{ .Values.global.namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.common.name }}
+      version: {{ .Values.common.version }}
+      project: {{ .Values.global.project }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.common.name }}
+        version: {{ .Values.common.version }}
+        project: {{ .Values.global.project }}
+    spec:
+      containers:
+        - name: {{ .Values.global.project }}-{{ .Values.common.name }}
+          image: grafana/grafana:6.7.2
+          ports:
+            - containerPort: {{ .Values.common.port }}
+          env:
+            - name: GF_SECURITY_ADMIN_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.common.name }}-configmap
+                  key: GF_SECURITY_ADMIN_USER
+            - name: GF_SECURITY_ADMIN_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.common.name }}-configmap
+                  key: GF_SECURITY_ADMIN_PASSWORD
+            - name: GF_USERS_ALLOW_SIGN_UP
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.common.name }}-configmap
+                  key: GF_USERS_ALLOW_SIGN_UP

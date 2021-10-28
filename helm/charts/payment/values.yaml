@@ -1,0 +1,4 @@
+common:
+  name: payment
+  version: v1
+  port: 5003

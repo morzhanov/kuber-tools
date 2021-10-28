@@ -1,0 +1,6 @@
+common:
+  name: ingress
+
+service:
+  name: apigw
+  port: 3001

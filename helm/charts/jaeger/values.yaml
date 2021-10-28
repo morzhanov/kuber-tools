@@ -1,0 +1,8 @@
+common:
+  name: jaeger
+  version: v1
+
+ports:
+  udp: 6831
+  tcp: 16686
+  tcp2: 14268

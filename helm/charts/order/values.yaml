@@ -1,0 +1,4 @@
+common:
+  name: order
+  version: v1
+  port: 5002

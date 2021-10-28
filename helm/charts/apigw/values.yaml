@@ -1,0 +1,4 @@
+common:
+  name: apigw
+  version: v1
+  port: 3001

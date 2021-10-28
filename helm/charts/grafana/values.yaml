@@ -1,0 +1,4 @@
+common:
+  name: grafana
+  version: v1
+  port: 3000
