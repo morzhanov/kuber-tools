@@ -4,6 +4,7 @@ namespace: kubetools
 
 resources:
   - ../../bases/namespace
+  - ../../bases/istio
   - ../../bases/apigw
   - ../../bases/grafana
   - ../../bases/jaeger

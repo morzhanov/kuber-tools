@@ -19,6 +19,7 @@ TBD
 Here described two option how to start kubernetes cluster locally:
 - Minikube
 - K3D
+- Docker Desktop
 
 ### Minikube
 
@@ -68,6 +69,82 @@ k3d cluster create kubetools -p "30000-31652:30000-31652@server:0"
 kubectl get nodes
 ```
 
+### Docker Desktop
+
+As an alternative you could use <a href="https://docs.docker.com/desktop/kubernetes/">Kubernetes for Docker Desktop</a>.
+
+## Istio
+
+// TODO: add istio setup description and what deploy files we are using
+
+### Installation
+
+Download from Istio <a href="https://istio.io/latest/docs/setup/install/">installation guide</a>
+
+To setup istio locally:
+```shell
+istioctl install --set profile=minimal
+```
+
+Note: before using Istio enable sidecar injection:
+```shell
+kubectl label namespace kubetools istio-injection=enabled
+```
+
+### Accessing services outside the cluster
+
+In order to access cluster services perform steps described in the <a href="https://istio.io/latest/docs/setup/getting-started/#determining-the-ingress-ip-and-ports">setup guide</a>
+
+### Add Jaeger
+
+To enable Jaeger in Istio run:
+```shell
+kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.11/samples/addons/jaeger.yaml
+```
+
+To enter Jaeger UI run:
+```shell
+istioctl dashboard jaeger
+```
+
+// TODO: add jaeger img
+
+### Add Kiali
+
+To enable Kiali in Istio run:
+```shell
+kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.11/samples/addons/kiali.yaml
+```
+
+To enter Kiali run:
+```shell
+istioctl dashboard kiali
+```
+
+// TODO: add kiali img from istio-course
+
+### Add Prometheus and Grafana
+
+Grafana setup for Istio:
+```shell
+kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.11/samples/addons/grafana.yaml
+```
+
+Prometheus setup for Istio:
+```shell
+kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.11/samples/addons/prometheus.yaml
+```
+
+To enter Grafana run:
+```shell
+istioctl dashboard grafana
+```
+
+Visit `http://localhost:3000/dashboard/db/istio-mesh-dashboard` in your web browser
+
+// TODO: add prom and grafana img from istio-course
+
+
 ## Deploying application on Local Kubernetes Cluster
 
 Here described two option how to deploy Go application on kubernetes cluster locally:
@@ -84,16 +161,16 @@ Here described two option how to deploy Go application on kubernetes cluster loc
 
 To get kustomize build:
 ```shell
-kustomize build kustomize/overlays/base
+kustomize build kustomize/overlays/local
 
 # or
 
-kubectl kustomize kustomize/overlays/base
+kubectl kustomize kustomize/overlays/local
 ```
 
 To deploy a stask to the kubernetes cluster:
 ```shell
-kubectl apply -k  kustomize/overlays/base
+kubectl apply -k  kustomize/overlays/local
 ```
 
 ### Helm

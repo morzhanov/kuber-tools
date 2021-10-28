@@ -7,15 +7,15 @@ metadata:
 spec:
   type: NodePort
   ports:
-    - name: udp
+    - name: udp-jaeger
       protocol: UDP
       port: 6831
       targetPort: 6831
-    - name: tcp
+    - name: tcp-jaeger
       protocol: TCP
       port: 16686
       targetPort: 16686
-    - name: tcp2
+    - name: tcp-jaeger2
       protocol: TCP
       port: 14268
       targetPort: 14268

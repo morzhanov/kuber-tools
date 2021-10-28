@@ -1,0 +1,15 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: kubetools-istio-gateway
+  annotations:
+    kubernetes.io/ingress.class: "istio"
+  namespace: kubetools
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /
+        backend:
+          serviceName: apigw
+          servicePort: 3001

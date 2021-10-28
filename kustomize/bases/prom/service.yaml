@@ -8,5 +8,6 @@ spec:
   type: NodePort
   ports:
     - port: 9090
+      name: tcp-prometheus
   selector:
     app: prometheus
