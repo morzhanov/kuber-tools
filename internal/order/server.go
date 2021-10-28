@@ -58,7 +58,7 @@ func (s *server) ProcessOrder(ctx context.Context, msg *porder.ProcessOrderReque
 	payCtx := context.WithValue(ctx, "span-context", paySpan.Context())
 	defer paySpan.Finish()
 
-	filter := bson.D{{"_id", msg.Id}}
+	filter := bson.D{{"id", msg.Id}}
 	update := bson.D{{"$set", bson.D{{"status", "processed"}}}}
 	if _, err := s.coll.UpdateOne(dbCtx, filter, update); err != nil {
 		return nil, err

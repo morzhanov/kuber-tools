@@ -21,16 +21,34 @@ spec:
         version: v1
         project: kubetools
     spec:
-      serviceAccountName: apigw
       containers:
-        - name: kubetools_apigw
-          image: kubetools_apigw
+        - name: kubetools-apigw
+          image: vladmorzhanov/kubetools_apigw:1.0.1
           ports:
             - containerPort: 3001
-          resources:
-            requests:
-              memory: "500M"
-              cpu: "0.15"
-            limits:
-              memory: "1500M"
-              cpu: "0.75"
+          env:
+            - name: PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: apigw-configmap
+                  key: PORT
+            - name: ORDER_GRPC_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: apigw-configmap
+                  key: ORDER_GRPC_URL
+            - name: ORDER_GRPC_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: apigw-configmap
+                  key: ORDER_GRPC_PORT
+            - name: PAYMENT_GRPC_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: apigw-configmap
+                  key: PAYMENT_GRPC_URL
+            - name: PAYMENT_GRPC_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: apigw-configmap
+                  key: PAYMENT_GRPC_PORT

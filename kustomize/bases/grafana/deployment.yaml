@@ -21,7 +21,22 @@ spec:
         version: v1
         project: kubetools
     spec:
-      serviceAccountName: grafana
       containers:
-        - name: kubetools_grafana
+        - name: kubetools-grafana
           image: grafana/grafana:6.7.2
+          env:
+            - name: GF_SECURITY_ADMIN_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: grafana-configmap
+                  key: GF_SECURITY_ADMIN_USER
+            - name: GF_SECURITY_ADMIN_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: grafana-configmap
+                  key: GF_SECURITY_ADMIN_PASSWORD
+            - name: GF_USERS_ALLOW_SIGN_UP
+              valueFrom:
+                configMapKeyRef:
+                  name: grafana-configmap
+                  key: GF_USERS_ALLOW_SIGN_UP

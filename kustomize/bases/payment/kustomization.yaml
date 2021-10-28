@@ -1,10 +1,18 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: kubetools
+
 commonLabels:
   app.kubernetes.io/name: payment
   app.kubernetes.io/component: payment
   app.kubernetes.io/part-of: payment
   app.kubernetes.io/managed-by: kustomize
 
+configMapGenerator:
+  - name: payment-configmap
+    envs:
+      - .env
+
 resources:
 - deployment.yaml
 - service.yaml
-- configmap.yaml

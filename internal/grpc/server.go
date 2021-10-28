@@ -2,6 +2,7 @@ package grpcserver
 
 import (
 	"context"
+	"fmt"
 	"net"
 
 	"github.com/morzhanov/kuber-tools/internal/errors"
@@ -29,6 +30,7 @@ func (s *baseServer) PrepareContext(ctx context.Context) (context.Context, opent
 }
 
 func (s *baseServer) Listen(ctx context.Context, cancel context.CancelFunc, server *grpc.Server) {
+	log.Info(fmt.Sprintf("Configuring GRPC server %s", s.Uri))
 	lis, err := net.Listen("tcp", s.Uri)
 	if err != nil {
 		cancel()
@@ -36,11 +38,13 @@ func (s *baseServer) Listen(ctx context.Context, cancel context.CancelFunc, serv
 		return
 	}
 
-	if err := server.Serve(lis); err != nil {
-		cancel()
-		errors.LogInitializationError(err, "grpc server", s.Logger)
-		return
-	}
+	go func() {
+		if err := server.Serve(lis); err != nil {
+			cancel()
+			errors.LogInitializationError(err, "grpc server", s.Logger)
+			return
+		}
+	}()
 	log.Info("Grpc server started", zap.String("port", s.Uri))
 	<-ctx.Done()
 	if err := lis.Close(); err != nil {

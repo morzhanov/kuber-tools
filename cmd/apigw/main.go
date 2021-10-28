@@ -29,7 +29,7 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	l, err := logger.NewLogger("apigw")
+	l, err := logger.NewLogger()
 	if err != nil {
 		log.Fatal("initialization error during logger setup")
 	}
@@ -39,11 +39,13 @@ func main() {
 	failOnError(l, cancel, "tracer", err)
 	m := metrics.NewMetricsCollector("apigw")
 
+	l.Info("Connecting to payment GRPC...")
 	payUrl := fmt.Sprintf("%s:%s", c.PaymentGRPCurl, c.PaymentGRPCport)
 	payConn, err := grpc.Dial(payUrl, grpc.WithInsecure(), grpc.WithBlock())
 	failOnError(l, cancel, "payment_grpc", err)
 	payClient := payment.NewPaymentClient(payConn)
 
+	l.Info("Connecting to order GRPC...")
 	orderUrl := fmt.Sprintf("%s:%s", c.OrderGRPCurl, c.OrderGRPCport)
 	orderConn, err := grpc.Dial(orderUrl, grpc.WithInsecure(), grpc.WithBlock())
 	failOnError(l, cancel, "order_grpc", err)

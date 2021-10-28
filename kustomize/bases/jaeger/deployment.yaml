@@ -21,7 +21,6 @@ spec:
         version: v1
         project: kubetools
     spec:
-      serviceAccountName: jaeger
       containers:
-        - name: kubetools_jaeger
+        - name: kubetools-jaeger
           image: jaegertracing/all-in-one:latest

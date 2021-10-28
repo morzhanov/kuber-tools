@@ -1,18 +1,15 @@
 apiVersion: v1
 kind: Service
 metadata:
-  creationTimestamp: null
-  labels:
-    app: apigw
   name: apigw
+  namespace: kubetools
 spec:
-  ports:
-  - name: 80-8080
-    port: 3001
-    protocol: TCP
-    targetPort: 3001
+  type: NodePort
   selector:
     app: apigw
-  type: ClusterIP
-status:
-  loadBalancer: {}
+  ports:
+    - name: 3001-3001
+      nodePort: 30080
+      port: 3001
+      protocol: TCP
+      targetPort: 3001

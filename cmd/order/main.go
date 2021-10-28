@@ -28,12 +28,14 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	l, err := logger.NewLogger("order")
+	l, err := logger.NewLogger()
 	if err != nil {
 		log.Fatal("initialization error during logger setup")
 	}
 	c, err := config.NewConfig()
 	failOnError(l, cancel, "config", err)
+	fmt.Printf("MongodbURL: %s\n", c.MongoURL)
+
 	t, err := tracing.NewTracer(ctx, l, "order")
 	failOnError(l, cancel, "tracer", err)
 	db, err := mongodb.NewMongoDB(c.MongoURL)
@@ -46,8 +48,8 @@ func main() {
 
 	s := order.NewServer(c.URL, c.Port, payClient, db, t, l)
 
+	go s.Listen(ctx, cancel)
 	l.Info("Order service successfully started!")
-	s.Listen(ctx, cancel)
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt)

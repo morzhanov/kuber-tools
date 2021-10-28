@@ -21,6 +21,5 @@
 .idea/
 
 # docker
-compose/data
-
+docker/data/
 logs/

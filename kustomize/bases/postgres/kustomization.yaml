@@ -1,8 +1,18 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: kubetools
+
 commonLabels:
   app.kubernetes.io/name: postgres
   app.kubernetes.io/component: postgres
   app.kubernetes.io/part-of: postgres
   app.kubernetes.io/managed-by: kustomize
 
+configMapGenerator:
+  - name: postgres-configmap
+    envs:
+      - .env
+
 resources:
 - deployment.yaml
+- service.yaml

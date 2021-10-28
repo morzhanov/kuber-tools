@@ -21,16 +21,34 @@ spec:
         version: v1
         project: kubetools
     spec:
-      serviceAccountName: order
       containers:
-        - name: kubetools_order
-          image: kubetools_order
+        - name: kubetools-order
+          image: vladmorzhanov/kubetools_order:1.0.5
           ports:
-            - containerPort: 3002
-          resources:
-            requests:
-              memory: "500M"
-              cpu: "0.15"
-            limits:
-              memory: "1500M"
-              cpu: "0.75"
+            - containerPort: 5002
+          env:
+            - name: PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: order-configmap
+                  key: PORT
+            - name: URL
+              valueFrom:
+                configMapKeyRef:
+                  name: order-configmap
+                  key: URL
+            - name: MONGO_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: order-configmap
+                  key: MONGO_URL
+            - name: PAYMENT_GRPC_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: order-configmap
+                  key: PAYMENT_GRPC_URL
+            - name: PAYMENT_GRPC_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: order-configmap
+                  key: PAYMENT_GRPC_PORT

@@ -22,11 +22,8 @@ func (p *service) GetPaymentInfo(ctx context.Context, in *gpayment.GetPaymentInf
 		id, orderID, name, status string
 		amount                    int32
 	)
-	rows, err := p.db.QueryContext(ctx, `SELECT * FROM payments WHERE order_id = $id`, in.OrderId)
-	if err != nil {
-		return nil, err
-	}
-	if err := rows.Scan(&id, &orderID, &name, &amount, &status); err != nil {
+	row := p.db.QueryRowContext(ctx, `SELECT * FROM payments WHERE order_id = $1`, in.OrderId)
+	if err := row.Scan(&id, &orderID, &name, &amount, &status); err != nil {
 		return nil, err
 	}
 	return &gpayment.PaymentMessage{Id: id, OrderId: orderID, Name: name, Status: status, Amount: amount}, nil
@@ -36,7 +33,7 @@ func (p *service) ProcessPayment(ctx context.Context, in *gpayment.ProcessPaymen
 	id := uuid.NewV4().String()
 	if _, err := p.db.QueryContext(
 		ctx,
-		`INSERT INTO payments (id, order_id, name, amount, status) VALUES ($id, $orderId, $name, $amount, $status)`,
+		`INSERT INTO payments (id, order_id, name, amount, status) VALUES ($1, $2, $3, $4, $5)`,
 		id, in.OrderId, in.Name, in.Amount, in.Status,
 	); err != nil {
 		return err

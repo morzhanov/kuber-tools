@@ -6,6 +6,8 @@ import (
 	"os"
 	"os/signal"
 
+	"github.com/morzhanov/kuber-tools/internal/errors"
+
 	"github.com/morzhanov/kuber-tools/internal/logger"
 	"github.com/morzhanov/kuber-tools/internal/payment"
 	"github.com/morzhanov/kuber-tools/internal/payment/config"
@@ -25,7 +27,7 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	l, err := logger.NewLogger("payment")
+	l, err := logger.NewLogger()
 	if err != nil {
 		log.Fatal("initialization error during logger setup")
 	}
@@ -37,10 +39,16 @@ func main() {
 	failOnError(l, cancel, "postgresql", err)
 	srv := payment.NewService(db)
 
+	if err := psql.RunMigrations(db, "payment"); err != nil {
+		cancel()
+		errors.LogInitializationError(err, "migrations", l)
+	}
+	l.Info("all database migrations applied...")
+
 	s := payment.NewServer(c.URL, c.Port, srv, l, t)
 
+	go s.Listen(ctx, cancel)
 	l.Info("Payment service successfully started!")
-	s.Listen(ctx, cancel)
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt)

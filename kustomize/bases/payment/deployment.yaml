@@ -21,16 +21,24 @@ spec:
         version: v1
         project: kubetools
     spec:
-      serviceAccountName: payment
       containers:
-        - name: kubetools_payment
-          image: kubetools_payment
+        - name: kubetools-payment
+          image: vladmorzhanov/kubetools_payment:1.0.5
           ports:
-            - containerPort: 3003
-          resources:
-            requests:
-              memory: "500M"
-              cpu: "0.15"
-            limits:
-              memory: "1500M"
-              cpu: "0.75"
+            - containerPort: 5003
+          env:
+            - name: PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: payment-configmap
+                  key: PORT
+            - name: URL
+              valueFrom:
+                configMapKeyRef:
+                  name: payment-configmap
+                  key: URL
+            - name: POSTGRES_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: payment-configmap
+                  key: POSTGRES_URL

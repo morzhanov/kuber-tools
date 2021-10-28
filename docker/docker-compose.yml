@@ -1,0 +1,87 @@
+version: "2"
+services:
+  postgres:
+    image: postgres
+    container_name: kubetools_postgres
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - kubetools
+
+  mongodb:
+    image: docker.io/bitnami/mongodb:4.4
+    container_name: kubetools_mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - 'mongodb_data:/bitnami/mongodb'
+    networks:
+      - kubetools
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: kubetools_jaeger
+    ports:
+      - "6831:6831/udp"
+      - "16686:16686"
+      - "14268:14268"
+    networks:
+      - kubetools
+
+  prometheus:
+    image: prom/prometheus:v2.17.1
+    container_name: kubetools_prometheus
+    volumes:
+      - ./prometheus:/etc/prometheus
+      - prometheus_data:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.console.libraries=/etc/prometheus/console_libraries"
+      - "--web.console.templates=/etc/prometheus/consoles"
+      - "--storage.tsdb.retention.time=200h"
+      - "--web.enable-lifecycle"
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    expose:
+      - 9090
+    networks:
+      - kubetools
+    labels:
+      org.label-schema.group: "monitoring"
+
+  grafana:
+    image: grafana/grafana:6.7.2
+    container_name: kubetools_grafana
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    expose:
+      - 3000
+    networks:
+      - kubetools
+    labels:
+      org.label-schema.group: "monitoring"
+
+networks:
+  kubetools:
+
+volumes:
+  prometheus_data: {}
+  grafana_data: {}
+  mongodb_data:
+    driver: local

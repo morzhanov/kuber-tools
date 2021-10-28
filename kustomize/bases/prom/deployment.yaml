@@ -21,7 +21,6 @@ spec:
         version: v1
         project: kubetools
     spec:
-      serviceAccountName: prometheus
       containers:
-        - name: kubetools_prometheus
+        - name: kubetools-prometheus
           image: prom/prometheus:v2.17.1

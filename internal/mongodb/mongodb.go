@@ -13,7 +13,7 @@ func NewMongoDB(uri string) (*mongo.Collection, error) {
 	if err != nil {
 		return nil, err
 	}
-	db := client.Database("kuber_tools")
-	coll := db.Collection("commands")
+	db := client.Database("kubetools")
+	coll := db.Collection("orders")
 	return coll, nil
 }
