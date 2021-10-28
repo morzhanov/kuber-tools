@@ -91,11 +91,18 @@ Note: before using Istio enable sidecar injection:
 kubectl label namespace kubetools istio-injection=enabled
 ```
 
-### Accessing services outside the cluster
+#### Accessing services outside the cluster
 
 In order to access cluster services perform steps described in the <a href="https://istio.io/latest/docs/setup/getting-started/#determining-the-ingress-ip-and-ports">setup guide</a>
 
-### Add Jaeger
+### Istio Dashboards
+
+Istio service mesh has a variety of dashboards to monitor your cluster:
+- Jaeger - for tracing
+- Kiali - for service cluster architecture visualizations
+- Prometheus and Grafana - for cluster metrics
+
+#### Add Jaeger Dashboard
 
 To enable Jaeger in Istio run:
 ```shell
@@ -109,7 +116,7 @@ istioctl dashboard jaeger
 
 // TODO: add jaeger img
 
-### Add Kiali
+#### Add Kiali Dashboard
 
 To enable Kiali in Istio run:
 ```shell
@@ -123,7 +130,7 @@ istioctl dashboard kiali
 
 // TODO: add kiali img from istio-course
 
-### Add Prometheus and Grafana
+#### Add Prometheus and Grafana Dashboard
 
 Grafana setup for Istio:
 ```shell
@@ -157,7 +164,7 @@ Here described two option how to deploy Go application on kubernetes cluster loc
 - `kustomize/overlays` contains base overlay config for base files
   - you could add new overlay to this directory to kustomize values in configs
 
-### Deploying to kuber cluster via Kustomize
+#### Deploying to kuber cluster via Kustomize
 
 To get kustomize build:
 ```shell
