@@ -115,6 +115,7 @@ istioctl dashboard jaeger
 ```
 
 // TODO: add jaeger img
+<img src=""/>
 
 #### Add Kiali Dashboard
 
@@ -129,6 +130,8 @@ istioctl dashboard kiali
 ```
 
 // TODO: add kiali img from istio-course
+<img src=""/>
+Image taken from <a href="https://github.com/morzhanov/istio-2020">istio-2020</a> repo.
 
 #### Add Prometheus and Grafana Dashboard
 
@@ -150,7 +153,8 @@ istioctl dashboard grafana
 Visit `http://localhost:3000/dashboard/db/istio-mesh-dashboard` in your web browser
 
 // TODO: add prom and grafana img from istio-course
-
+<img src=""/>
+Image taken from <a href="https://github.com/morzhanov/istio-2020">istio-2020</a> repo.
 
 ## Deploying application on Local Kubernetes Cluster
 
@@ -183,3 +187,20 @@ kubectl apply -k  kustomize/overlays/local
 ### Helm
 
 // TODO: describe how to configure and deploy cluster with HELM
+
+## Rancher
+
+In order to add Rancher to monitor the cluster we can deploy it as Docker image and connect our existing cluster.
+
+Deploying Rancher:
+```shell
+docker run -d --restart=unless-stopped \
+  -p 4000:80 -p 4001:443 \
+  --privileged \
+  rancher/rancher:latest
+```
+
+// TODO: write description and add images from desktop
+
+## Crossplane
+
