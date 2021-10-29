@@ -2,7 +2,47 @@
 
 Kubernetes popular tooling testing example.
 
-TBD
+// TODO: describe tolls will be used
+
+<img src="https://i.ibb.co/k9wBR7N/Untitled-2021-10-29-2248.png" alt="arch"/>
+
+// TODO: describe app
+
+Table of Contents
+=================
+
+* [kuber-tools](#kuber-tools)
+  * [Local App Development](#local-app-development)
+    * [Docker Compose](#docker-compose)
+  * [Postman Collection](#postman-collection)
+  * [Local Cluster setup](#local-cluster-setup)
+    * [Minikube](#minikube)
+    * [K3D](#k3d)
+    * [Docker Desktop](#docker-desktop)
+  * [Istio](#istio)
+    * [Installation](#installation)
+      * [Accessing services outside the cluster](#accessing-services-outside-the-cluster)
+    * [Istio Dashboards](#istio-dashboards)
+      * [Add Jaeger Dashboard](#add-jaeger-dashboard)
+      * [Add Kiali Dashboard](#add-kiali-dashboard)
+      * [Add Prometheus and Grafana Dashboard](#add-prometheus-and-grafana-dashboard)
+  * [Deploying application on Local Kubernetes Cluster](#deploying-application-on-local-kubernetes-cluster)
+    * [Kustomize](#kustomize)
+      * [Deploying to kuber cluster via Kustomize](#deploying-to-kuber-cluster-via-kustomize)
+    * [Helm](#helm)
+  * [Rancher](#rancher)
+  * [Ambassador](#ambassador)
+    * [Installation](#installation-1)
+    * [API Gateway setup](#api-gateway-setup)
+  * [Crossplane](#crossplane)
+    * [Installing Crossplane](#installing-crossplane)
+    * [Adding AWS RDS Instance to Kuber cluster](#adding-aws-rds-instance-to-kuber-cluster)
+  * [Flagger](#flagger)
+    * [Canary Deployment](#canary-deployment)
+  * [ArgoCD](#argocd)
+    * [Installation](#installation-2)
+    * [Adding Git repo](#adding-git-repo)
+    * [Other Argo Tools](#other-argo-tools)
 
 ## Local App Development
 
