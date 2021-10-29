@@ -1,12 +1,30 @@
 # kuber-tools
 
-Kubernetes popular tooling testing example.
+Kubernetes popular tooling testing example. Kubernetes has a lot of useful tools for microservices development.
 
-// TODO: describe tolls will be used
+This repository aims to provide description of the range of those tools.
+
+Tools:
+- Kubernetes - open-source system for automating deployment, scaling, and management of containerized applications.
+- K3D - kubernetes local cluster
+- Minikube - kubernetes local cluster
+- Docker Desktop Kubernetes cluster - kubernetes local cluster
+- Kustomize - introduces a template-free way to customize application configuration that simplifies the use of off-the-shelf applications
+- Helm - the package manager for Kubernetes
+- Istio - Kubernetes service mesh
+- Ambassador - Kubernetes popular API Gateway
+- Rancher - tools for Kubernetes cluster deployment and management
+- Flagger - tool that helps to create and manage a range of deployment strategies
+- Crossplane - tools which declares external resources as Kubernetes components
+- ArgoCD - declarative, GitOps continuous delivery tool for Kubernetes
+
+This repository based on simple Go app. The app is deployed into local Kubernetes cluster.
+
+- Order service - creates orders
+- Payment service - performs payment when order being processed
+- API Gateway service - simple APIGW service which proxies all requests to order and payment services
 
 <img src="https://i.ibb.co/k9wBR7N/Untitled-2021-10-29-2248.png" alt="arch"/>
-
-// TODO: describe app
 
 Table of Contents
 =================
@@ -48,13 +66,37 @@ Table of Contents
 
 ### Docker Compose
 
-// TODO: describe how to setup dc
+`docker` directory contains `docker-compose.yaml` file which deploys application dependent services (postgresq, mongodb, etc.)
+
+It's useful to deploy this stack for the local development as it is consumes less resouces then Kubernetes cluster.
 
 ## Postman Collection
 
-// TODO: describe and add screenshots about postman
+`kubetools.postman_collection.json` file contains Postman collection definition for apigw service interaction.
 
-## Local Cluster setup
+<img src="https://i.ibb.co/BcrTstz/post.png" alt="postman"/>
+
+## Guide
+
+In order to deploy kubernetes cluster and add main tools perform next steps:
+
+- Install local kubernetes cluster (via K3D, Minikube or Docker Desktop)
+- Add Istio to the cluster
+- Add Istio dashboards
+- Deploy kustomize files
+- Connect cluster to the Rancher or review resources via Lens or K9S
+- Setup Ambassador API GW
+- Perform requests from Postman
+- Review Kiali/Jaeger/Prometheus Istio dashboards
+- Try additional tools (could take a more time to investigate and setup):
+  - Flagger
+  - Crossplane
+  - ArgoCD
+  - Argo Workflows
+  - Argo Events
+  - Argo Rollouts
+
+## Kubernetes Local Cluster Setup
 
 Here described two option how to start kubernetes cluster locally:
 - Minikube
@@ -115,7 +157,9 @@ As an alternative you could use <a href="https://docs.docker.com/desktop/kuberne
 
 ## Istio
 
-// TODO: add istio setup description and what deploy files we are using
+Istio extends Kubernetes to establish a programmable, application-aware network using the powerful Envoy service proxy. Working with both Kubernetes and traditional workloads, Istio brings standard, universal traffic management, telemetry, and security to complex deployments.
+
+<img src="https://istio.io/latest/docs/ops/deployment/architecture/arch.svg" alt="istio"/>
 
 ### Installation
 
@@ -154,8 +198,8 @@ To enter Jaeger UI run:
 istioctl dashboard jaeger
 ```
 
-// TODO: add jaeger img
-<img src=""/>
+<img src="https://github.com/morzhanov/istio-2020/raw/master/task_2/screenshots/11.png?raw=true" alt="jaeger"/>
+Image taken from <a href="https://github.com/morzhanov/istio-2020">istio-2020</a> repo.
 
 #### Add Kiali Dashboard
 
@@ -169,8 +213,7 @@ To enter Kiali run:
 istioctl dashboard kiali
 ```
 
-// TODO: add kiali img from istio-course
-<img src=""/>
+<img src="https://github.com/morzhanov/istio-2020/blob/master/task_2/screenshots/09.png?raw=true" alt="kiali"/>
 Image taken from <a href="https://github.com/morzhanov/istio-2020">istio-2020</a> repo.
 
 #### Add Prometheus and Grafana Dashboard
@@ -192,8 +235,7 @@ istioctl dashboard grafana
 
 Visit `http://localhost:3000/dashboard/db/istio-mesh-dashboard` in your web browser
 
-// TODO: add prom and grafana img from istio-course
-<img src=""/>
+<img src="https://github.com/morzhanov/istio-2020/blob/master/task_2/screenshots/15.png?raw=true" alt="grafana"/>
 Image taken from <a href="https://github.com/morzhanov/istio-2020">istio-2020</a> repo.
 
 ## Deploying application on Local Kubernetes Cluster
@@ -203,6 +245,10 @@ Here described two option how to deploy Go application on kubernetes cluster loc
 - Helm
 
 ### Kustomize
+
+Kustomize is a standalone tool to customize Kubernetes objects through a kustomization file.
+
+<img src="https://habrastorage.org/r/w1560/webt/nv/sf/uy/nvsfuyar7x570ia_zrcp_v4lohi.jpeg" alt="kustomize"/>
 
 - `kustomize/bases` contains base configuration files for deployment, configmaps, services, etc.
 - `kustomize/overlays` contains base overlay config for base files
@@ -226,9 +272,26 @@ kubectl apply -k  kustomize/overlays/local
 
 ### Helm
 
-// TODO: describe how to configure and deploy cluster with HELM
+Helm is a package manager that helps you to find, share, and use software that is built for Kubernetes. Helm streamlines the installation and management of Kubernetes applications, and is the equivalent of the apt, yum, or homebrew utilities for Kubernetes.
+
+Helm uses a packaging format called Chart. A chart is a collection of files that describes a related set of Kubernetes resources. A single chart might be used to deploy something simple, like a memcached pod, or a complex deployment, like a full web app stack with HTTP servers, databases, and caches.
+
+<img src="https://miro.medium.com/max/1400/1*mClrYLFakC6B6f62vVnhcA.png" alt="helm"/>
+
+#### Installing
+
+On Mac OS Helm could be installed via brew:
+```shell
+brew install helm
+```
+
+Other installation options available in the <a href="https://helm.sh/docs/intro/install/">guide</a>
 
 ## Rancher
+
+Rancher is a complete software stack for teams adopting containers. It addresses the operational and security challenges of managing multiple Kubernetes clusters, while providing DevOps teams with integrated tools for running containerized workloads.
+
+<img src="https://rancher.com/docs/img/rancher/rancher-architecture-rancher-api-server.svg" alt="rancher"/>
 
 In order to add Rancher to monitor the cluster we can deploy it as Docker image and connect our existing cluster.
 
@@ -239,8 +302,6 @@ docker run -d --restart=unless-stopped \
   --privileged \
   rancher/rancher:latest
 ```
-
-// TODO: write description and add images from desktop
 
 ## Ambassador
 
