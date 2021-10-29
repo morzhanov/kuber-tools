@@ -204,3 +204,73 @@ docker run -d --restart=unless-stopped \
 
 ## Crossplane
 
+Crossplane goes beyond simply modelling infrastructure primitives as custom resources - it enables you to define new custom resources with schemas of your choosing.
+
+<img src="https://www.percona.com/blog/wp-content/uploads/2021/05/crossplane-provider-sql.png" alt="crossplane"/>
+
+As an example we can deploy AWS RDS Instance using crossplane, and it will be assigned to our cluster.
+
+### Installing Crossplane
+
+This should install Crossplane locally:
+```shell
+curl -sL https://raw.githubusercontent.com/crossplane/crossplane/release-1.5/install.sh | sh
+```
+
+Install simple configuration for AWS (in prod it's better to use custom configuration):
+```shell
+kubectl crossplane install configuration registry.upbound.io/xp/getting-started-with-aws:v1.5.0
+```
+
+Wait until all packages become healthy:
+```shell
+watch kubectl get pkg
+```
+
+### Adding AWS RDS Instance to Kuber cluster
+
+We can use Crossplane created Portgres instance instead of locally deployed by Kustomize file `kustomize/bases/postgresql`.
+
+Using an AWS account with permissions to manage RDS databases:
+```shell
+AWS_PROFILE=default && echo -e "[default]\naws_access_key_id = $(aws configure get aws_access_key_id --profile $AWS_PROFILE)\naws_secret_access_key = $(aws configure get aws_secret_access_key --profile $AWS_PROFILE)" > creds.conf
+```
+
+Create a Provider Secret:
+```shell
+kubectl create secret generic aws-creds -n crossplane-system --from-file=creds=./creds.conf
+```
+
+The AWS provider supports provisioning an RDS instance via the RDSInstance managed resource it adds to Crossplane:
+```shell
+apiVersion: database.aws.crossplane.io/v1beta1
+kind: RDSInstance
+metadata:
+  name: rdspostgres
+spec:
+  forProvider:
+    region: us-east-1
+    dbInstanceClass: db.t2.small
+    masterUsername: masteruser
+    allocatedStorage: 20
+    engine: postgres
+    engineVersion: "12"
+    skipFinalSnapshotBeforeDeletion: true
+  writeConnectionSecretToRef:
+    namespace: kubetools
+    name: aws-rdspostgres-conn
+```
+
+Note: RDSInstance is a Managed resource (MR). With Crossplane you could create a more complex Composite resources (XR):
+<img src="https://crossplane.io/docs/v1.4/media/composition-xrs-and-mrs.svg" alt="rds"/>
+You can review difference between managed and composite resources in the <a href="https://crossplane.io/docs/v1.4/concepts/composition.html">docs</a>
+
+Creating the above instance will cause Crossplane to provision an RDS instance on AWS. You can view the progress with the following command:
+```shell
+kubectl get rdsinstance rdspostgres
+```
+
+When provisioning is complete, you should see `READY: True` in the output. You can take a look at its connection secret that is referenced under `spec.writeConnectionSecretToRef`:
+```shell
+kubectl describe secret aws-rdspostgres-conn -n kubetools
+```
