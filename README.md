@@ -291,7 +291,7 @@ When you deploy a new version of an app, Flagger gradually shifts traffic to the
 
 <img src="https://raw.githubusercontent.com/fluxcd/flagger/main/docs/diagrams/flagger-canary-steps.png" alt="canary"/>
 
-Create a canary custom resource (code could be found in the <a href="https://github.com/morzhanov/kuber-tools/flagger/canary.yaml">canary.yml</a> file).
+Create a canary custom resource (code could be found in the <a href="https://github.com/morzhanov/kuber-tools/blob/main/flagger/canary.yaml">canary.yml</a> file).
 
 Apply the Canary CRD:
 ```shell
