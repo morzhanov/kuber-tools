@@ -274,3 +274,57 @@ When provisioning is complete, you should see `READY: True` in the output. You c
 ```shell
 kubectl describe secret aws-rdspostgres-conn -n kubetools
 ```
+
+## Flagger
+
+is a progressive delivery tool that automates the release process for applications running on Kubernetes. It reduces the risk of introducing a new software version in production by gradually shifting traffic to the new version while measuring metrics and running conformance tests.
+
+Flagger implements several deployment strategies (Canary releases, A/B testing, Blue/Green mirroring) using a service mesh (App Mesh, Istio, Linkerd, Open Service Mesh) or an ingress controller (Contour, Gloo, NGINX, Skipper, Traefik) for traffic routing. For release analysis, Flagger can query Prometheus, Datadog, New Relic, CloudWatch or Graphite and for alerting it uses Slack, MS Teams, Discord and Rocket.
+
+<img src="https://raw.githubusercontent.com/fluxcd/flagger/main/docs/diagrams/flagger-overview.png" alt="flagger"/>
+
+More info: <a href="https://docs.flagger.app/">Flagger docs</a>
+
+### Canary Deployment
+
+When you deploy a new version of an app, Flagger gradually shifts traffic to the canary, and at the same time, measures the requests success rate as well as the average response duration. You can extend the canary analysis with custom metrics, acceptance and load testing to harden the validation process of your app release process.
+
+<img src="https://raw.githubusercontent.com/fluxcd/flagger/main/docs/diagrams/flagger-canary-steps.png" alt="canary"/>
+
+Create a canary custom resource (code could be found in the <a href="https://github.com/morzhanov/kuber-tools/flagger/canary.yaml">canary.yml</a> file).
+
+Apply the Canary CRD:
+```shell
+kubectl apply -f ./flagger/canary.yaml
+```
+
+When the canary analysis starts, Flagger will call the pre-rollout webhooks before routing traffic to the canary. The canary analysis will run for five minutes while validating the HTTP metrics and rollout hooks every minute.
+
+<img src="https://raw.githubusercontent.com/fluxcd/flagger/main/docs/diagrams/flagger-canary-hpa.png" alt="canary-progress"/>
+
+After a couple of seconds Flagger will create the canary objects:
+
+```shell
+# applied 
+deployment.apps/apigw
+horizontalpodautoscaler.autoscaling/apigw
+kubetools/apigw
+
+# generated 
+deployment.apps/apigw-primary
+horizontalpodautoscaler.autoscaling/apigw-primary
+service/apigw
+service/apigw-canary
+service/apigw-primary
+destinationrule.networking.istio.io/apigw-canary
+destinationrule.networking.istio.io/apigw-primary
+virtualservice.networking.istio.io/apigw
+```
+
+For automated canary promotion review <a href="https://docs.flagger.app/tutorials/istio-progressive-delivery#automated-canary-promotion">docs</a>
+
+
+
+
+
+
