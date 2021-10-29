@@ -202,6 +202,56 @@ docker run -d --restart=unless-stopped \
 
 // TODO: write description and add images from desktop
 
+## Ambassador
+
+<a href="https://www.getambassador.io/">Ambassador</a> is an API Gateway for cloud-native applications that routes traffic between heterogeneous services and maintains decentralized workflows. It acts as a single entry point and supports tasks like service discovery, configuration management, routing rules, and rate limiting. It provides great flexibility and ease of configuration for your services.
+<img src="https://russianblogs.com/images/909/3c39dbda59491ec4789ba6916430ecc5.png" alt="ambassador"/>
+
+### Installation
+
+```shell
+kubectl apply -f https://app.getambassador.io/yaml/edge-stack/latest/aes-crds.yaml && \
+kubectl wait --for condition=established --timeout=90s crd -lproduct=aes && \
+kubectl apply -f https://app.getambassador.io/yaml/edge-stack/latest/aes.yaml && \
+kubectl -n kubetools wait --for condition=available --timeout=90s deploy -lproduct=aes
+```
+
+### API Gateway setup
+
+We'will create example ambassador configuration for kubetools/apigw service.
+
+At first we should create mapping for apigw service to ambassador:
+
+```yaml
+---
+apiVersion: getambassador.io/v3alpha1
+kind: Mapping
+metadata:
+  name: apigw
+  namespace: kubetools
+spec:
+  hostname: "*"
+  prefix: /
+  service: apigw
+```
+
+And apply it:
+```shell
+kubectl apply -f ./ambassador/mapping.yaml
+```
+
+In order to access ambassador outside the cluster we should store it URL:
+
+```shell
+export AMBASSADOR_LB_ENDPOINT=$(kubectl -n kubetools get svc ambassador -o "go-template={{range .status.loadBalancer.ingress}}{{or .ip .hostname}}{{end}}")
+```
+
+After configuration is applied we could test the apigw service locally
+
+```shell
+curl https://$AMBASSADOR_LB_ENDPOINT/payment/<order_id>
+```
+
 ## Crossplane
 
 Crossplane goes beyond simply modelling infrastructure primitives as custom resources - it enables you to define new custom resources with schemas of your choosing.
@@ -387,3 +437,11 @@ argocd app create kubetools --repo https://github.com/morzhanov/kuber-tools.git 
 ```
 
 After that ArgoCD will watch the repo and update Kubernetes cluster on kustomize/overlays/local changes.
+
+### Other Argo Tools
+
+In addition to the ArgoCD, Argo has some other useful tools for Kubernetes cluster:
+
+- <a href="https://argoproj.github.io/argo-workflows/">Argo Workflows</a> - Argo Workflows is an open source container-native workflow engine for orchestrating parallel jobs on Kubernetes.
+- <a href="https://github.com/argoproj/argo-events">Argo Workflows</a> - Argo Events is an event-driven workflow automation framework for Kubernetes. It allows you to trigger 10 different actions (such as the creation of Kubernetes objects, invoke workflows or serverless workloads) on over 20 different events (such as webhook, S3 drop, cron schedule, messaging queues - e.g. Kafka, GCP PubSub, SNS, SQS).
+- <a href="https://argoproj.github.io/argo-rollouts/">Argo Workflows</a> - Argo Rollouts is a Kubernetes controller and set of CRDs which provide advanced deployment capabilities such as blue-green, canary, canary analysis, experimentation, and progressive delivery features to Kubernetes. (Could be used instead of Flagger).

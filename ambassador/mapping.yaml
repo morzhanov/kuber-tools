@@ -1,0 +1,9 @@
+apiVersion: getambassador.io/v3alpha1
+kind: Mapping
+metadata:
+  name: apigw
+  namespace: kubetools
+spec:
+  hostname: "*"
+  prefix: /
+  service: apigw
