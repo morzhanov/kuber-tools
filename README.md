@@ -323,8 +323,67 @@ virtualservice.networking.istio.io/apigw
 
 For automated canary promotion review <a href="https://docs.flagger.app/tutorials/istio-progressive-delivery#automated-canary-promotion">docs</a>
 
+## ArgoCD
 
+Argo CD has App of Apps pattern for cluster bootstrapping. That allows us programmatically and automatically create Argo CD apps instead of creating each application manually. Concept is simple; create one Argo CD application looking some git repo path and place all Argo CD application definition files into there. So that once any application definition file created on that git repo path, Argo CD application is also created automatically. Inspiring with that, it can be created or managed any Kubernetes object even Argo CD itself.
 
+<img src="https://miro.medium.com/max/1400/1*cM-oD_QWXea-rYVEbtfFkA.jpeg" alt="argocd-arch"/>
 
+More info in the <a href="https://medium.com/devopsturkiye/self-managed-argo-cd-app-of-everything-a226eb100cf0">article</a>
 
+### Installation
 
+Run yaml script to install ArgoCD on Kubernetes cluster:
+
+```shell
+kubectl apply -n argocd -f \
+https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml 
+```
+
+Result:
+
+```shell
+Pods:
+argocd-application-controller-6b47c9bd78-kp6dj
+argocd-dex-server-7b6d8776d8-knsxx
+argocd-redis-99fb49846-l466k
+argocd-repo-server-b664bd94b-bmtwr
+argocd-server-768879948c-sx875
+Services:
+argocd-dex-server
+argocd-metrics
+argocd-redis
+argocd-repo-server
+argocd-server
+argocd-server-metrics
+```
+
+Next we will need to install argocd cli:
+
+```shell
+brew install argocd
+
+argocd login
+
+argocd account update-password
+```
+
+<img src="https://habrastorage.org/r/w1560/getpro/habr/upload_files/d34/5bf/65f/d345bf65fce1af31de1f9988dafb5f57.png" alt="argocd"/>
+
+After that we are able to add clusters to ArgoCD. We will need to add `kubetools` cluster.
+
+<img src="https://habrastorage.org/r/w1560/getpro/habr/upload_files/a82/ede/a50/a82edea503920831ba39062ac45d2060.png" alt="clusters"/>
+
+### Adding Git repo
+
+We could add our github repository to be managed by ArgoCD via single script:
+
+```shell
+argocd app create kubetools --repo https://github.com/morzhanov/kuber-tools.git \
+  --path kustomize/overlays/local \
+  --sync-policy automatic \
+  --dest-server http://your-kuber-cluster-url.svc 
+  --dest-namespace kubetools
+```
+
+After that ArgoCD will watch the repo and update Kubernetes cluster on kustomize/overlays/local changes.
